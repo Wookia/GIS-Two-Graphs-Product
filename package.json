@@ -1,0 +1,16 @@
+{
+    "name": "gis-two-graphs-product",
+    "version": "0.1.0",
+    "scripts": {
+        "start": "electron .",
+        "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=graph.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Two-Grap-Product\"",
+        "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=graph.png --prune=true --out=release-builds"
+    },
+    "devDependencies": {
+        "electron-packager": "^9.0.1"
+    },
+    "dependencies": {
+        "electron": "^2.0.0",
+        "cytoscape": "^3.2.11"
+    }
+}
