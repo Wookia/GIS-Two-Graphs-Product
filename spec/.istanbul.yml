@@ -1,11 +1,10 @@
 verbose: false
 instrumentation:
-    root: ./src
+    root: ./
     extensions:
         - .js
     default-excludes: true
-    #excludes: ['**/tinymce/**', '**/lib/**', '**/tools/**', '**/build/**']
-    #excludes: ['server.js', 'index.js', 'routes/**']
+    excludes: ['spec/**', 'main.js', 'index.js']
     embed-source: false
     variable: __coverage__
     compact: true
