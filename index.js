@@ -6,7 +6,7 @@ const url = require('url');
 const fs = require('fs');
 
 // SET ENV
-process.env.NODE_ENV = 'dev';
+process.env.NODE_ENV = 'production';
 
 const {app, BrowserWindow, Menu, ipcMain, dialog} = electron;
 
