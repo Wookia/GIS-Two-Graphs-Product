@@ -1,0 +1,17 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+        {
+            "name": "Launch Tests (Jasmine)",
+			"type": "node",
+			"request": "launch",
+            "program": "${workspaceRoot}/spec/executeTests.js",
+			"sourceMaps": false,
+			"cwd": "${workspaceRoot}",
+			"outFiles": [],
+			"stopOnEntry": false,
+			"env": {
+			}
+		}
+	]
+}
