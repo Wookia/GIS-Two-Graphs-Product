@@ -13,7 +13,11 @@
                       
                 <label>
                     <input id="directed" type="checkbox"/>
-                    <span>Directed</span>
+                    <span style="padding-left: 21px; color: #fff">Directed</span>
+                </label>
+                <label style="padding-left: 10px">
+                    <input id="extended" type="checkbox"/>
+                    <span style="padding-left: 21px; color: #fff">More space</span>
                 </label>
                 <a class="brand-logo center">
                     Two graphs product
@@ -22,7 +26,7 @@
         </nav>
         <div class="">
             <div class="row">
-                <div class="col s4">
+                <div id="ONE-card" class="col s4">
                     <div class="card blue-grey darken-1">
                         <div class="card-content white-text">
                             <span class="card-title">Graph One</span>
@@ -31,11 +35,15 @@
                             </div>
                         </div>
                         <div class="card-action">
-                            <a href="#">Import graph</a>
+                            <p class="white-text">Apply layout changes</p>
+                            <a onclick="applyLayout('ONE', 'grid')" href="#">Grid</a>
+                            <a onclick="applyLayout('ONE', 'random')" href="#">Random</a>
+                            <a onclick="applyLayout('ONE', 'circle')" href="#">Circle</a>
+                            <a onclick="applyLayout('ONE', 'cose')" href="#">Cose</a>
                         </div>
                     </div>
                 </div>
-                <div class="col s4">
+                <div id="TWO-card" class="col s4">
                     <div class="card blue-grey darken-1">
                         <div class="card-content white-text">
                             <span class="card-title">Graph Two</span>
@@ -44,11 +52,15 @@
                             </div>
                         </div>
                         <div class="card-action">
-                            <a href="#">Import graph</a>
+                            <p class="white-text">Apply layout changes</p>
+                            <a onclick="applyLayout('TWO', 'grid')" href="#">Grid</a>
+                            <a onclick="applyLayout('TWO', 'random')" href="#">Random</a>
+                            <a onclick="applyLayout('TWO', 'circle')" href="#">Circle</a>
+                            <a onclick="applyLayout('TWO', 'cose')" href="#">Cose</a>
                         </div>
                     </div>
                 </div>
-                <div class="col s4">
+                <div id="RESULT-card" class="col s4">
                     <div class="card blue-grey darken-1">
                         <div class="card-content white-text">
                             <span class="card-title">Graphs Product</span>
@@ -57,7 +69,11 @@
                             </div>
                         </div>
                         <div class="card-action">
-                            <a href="#">Export graph</a>
+                            <p class="white-text">Apply layout changes</p>
+                            <a onclick="applyLayout('RESULT', 'grid')" href="#">Grid</a>
+                            <a onclick="applyLayout('RESULT', 'random')" href="#">Random</a>
+                            <a onclick="applyLayout('RESULT', 'circle')" href="#">Circle</a>
+                            <a onclick="applyLayout('RESULT', 'cose')" href="#">Cose</a>
                         </div>
                     </div>
                 </div>
@@ -65,7 +81,11 @@
         </div>
         
         <script>
-            require('./graph.js')
+            let graph = require('./main.js')
+
+            function applyLayout(type, name){
+                graph.applyLayout(type, name);
+            }
         </script>
     </body>
   </html>

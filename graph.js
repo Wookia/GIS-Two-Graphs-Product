@@ -1,17 +1,51 @@
+'use strict';
+
 const ONE = "ONE";
 const TWO = "TWO";
 const RESULT = "RESULT";
 
 const cytoscape = require('cytoscape');
 
-let gr;
-
 class Graphs{
-    constructor(directed){
-        this.graphOne = new Graph(ONE, this, directed);
-        this.graphTwo = new Graph(TWO, this, directed);
-        this.graphResult = new Graph(RESULT, this, directed);
+    constructor(directed, document){
+        this.graphOne = new Graph(ONE, this, directed, document);
+        this.graphTwo = new Graph(TWO, this, directed, document);
+        this.graphResult = new Graph(RESULT, this, directed, document);
         this.directed = directed;
+    }
+
+    restartSingle(name){
+        if(name == ONE) {
+            this.graphOne.destroy();
+            this.graphOne = new Graph(ONE, this, this.directed);
+        }
+        if(name == TWO) {
+            this.graphTwo.destroy();
+            this.graphTwo = new Graph(TWO, this, this.directed);
+        }
+        this.graphResult.destroy();
+        this.graphResult = new Graph(RESULT, this, this.directed);
+    }
+
+    resize(){
+        this.graphOne.cy.resize();
+        this.graphTwo.cy.resize();
+        this.graphResult.cy.resize();
+        this.graphOne.cy.fit();
+        this.graphTwo.cy.fit();
+        this.graphResult.cy.fit();
+    }
+
+    getGraph(name){
+        if(name == ONE){
+            return this.graphOne;
+        }
+        else if(name == TWO){
+            return this.graphTwo;
+        }
+        else if(name == RESULT){
+            return this.graphResult;
+        }
     }
 
     destroy(){
@@ -19,6 +53,7 @@ class Graphs{
         this.graphTwo.destroy();
         this.graphResult.destroy();
     }
+
     getGraphs(to){
         let graph;
         let secondGraph;
@@ -42,24 +77,24 @@ class Graphs{
         }
     }
 
-    addNode(graphName, name, x, y){
+    addNode(graphName, name, x, y, isImport){
         let graphs = this.getGraphs(graphName);
         let graph = graphs.graph;
         let secondGraph = graphs.secondGraph;
-        name = graph.addNode(name, x, y);
+        name = graph.addNode(name, x, y, isImport);
         let secondGraphMatrix = secondGraph.getGraph();
         for (let key in secondGraphMatrix){
             let newName = this.getName(graphName, name, key);
-            this.graphResult.addNode(newName);
+            this.graphResult.addNode(newName, 0, 0, isImport);
         }
         for (let key in secondGraphMatrix){
             let newName = this.getName(graphName, name, key);
             for(let subKey in secondGraphMatrix[key]){
                 if(secondGraphMatrix[key][subKey]){
-                    let secondName = this.getName(graphName, name, subKey)
-                    this.graphResult.addEdge(newName, secondName)
+                    let secondName = this.getName(graphName, name, subKey);
+                    this.graphResult.addEdge(newName, secondName);
                     if(!this.directed){
-                        this.graphResult.addEdge(secondName, newName)
+                        this.graphResult.addEdge(secondName, newName);
                     }
                 }
             }
@@ -116,7 +151,7 @@ class Graphs{
 }
 
 class Graph{
-    constructor(type, graphs, directed){
+    constructor(type, graphs, directed, document){
         let self = this;
 
         this.type = type;
@@ -127,6 +162,7 @@ class Graph{
         this.maxY = 0;
         this.cy  = cytoscape({
             container: document.getElementById(type),
+            userZoomingEnabled: false,
             style: [{
                 selector: 'node',
                 style: {
@@ -146,7 +182,7 @@ class Graph{
                 var evtTarget = event.target;
                 if( evtTarget === self.cy ){
                     delete self.selected;
-                    self.graphs.addNode(type, null, event.position.x, event.position.y)
+                    self.graphs.addNode(type, null, event.position.x, event.position.y);
                 } 
                 else {
                     if(!self.selected){
@@ -173,23 +209,23 @@ class Graph{
                 self.cy.edges().unselect();
                 self.cy.nodes().unselect();
             }
-        })
+        });
     }
 
     destroy(){
         this.cy.destroy();
     }
 
-    applyLayout(){
-        if(this.type == RESULT){
+    applyLayout(isImport, name){
+        if(this.type == RESULT || isImport){
             let layout = this.cy.layout({
-                name: 'grid'
+                name: name ? name : (this.layout ? this.layout : 'grid')
             });
 
             layout.run();
-            layout.on('layoutready', function(event){
-                var a = 1;
-            })
+        }
+        if(this.type == RESULT && name){
+            this.layout = name;
         }
     }
 
@@ -197,13 +233,13 @@ class Graph{
         return this.graph;
     }
 
-    addNode(name, x, y){
+    addNode(name, x, y, isImport){
         let self = this;
         if(this.type != RESULT){
             
         }
         if(!name){
-            var name = this.iterator;
+            name = this.iterator;
         }
         this.iterator++;
         if(!x && !y){
@@ -235,7 +271,7 @@ class Graph{
         for (let key in this.graph){
             this.graph[key][name] = 0;
         }
-        this.applyLayout();
+        this.applyLayout(isImport);
         return name;
     }
 
@@ -272,18 +308,4 @@ class Graph{
     }
 }
 
-function initialize(){
-    if(gr){
-        gr.destroy;
-    }
-    gr = new Graphs(document.getElementById("directed").checked);
-}
-
-window.onload = function(){
-    
-    const checkbox = document.getElementById('directed')
-
-    checkbox.addEventListener('change', initialize);
-
-    initialize();
-}
+module.exports.Graphs = Graphs;

@@ -1,11 +1,14 @@
+'use strict';
+
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 
 // SET ENV
-process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'dev';
 
-const {app, BrowserWindow, Menu, ipcMain} = electron;
+const {app, BrowserWindow, Menu, ipcMain, dialog} = electron;
 
 let mainWindow;
 
@@ -23,12 +26,18 @@ app.on('ready', function(){
   mainWindow.on('closed', function(){
     app.quit();
   });
+  
+  mainWindow.on('did-finish-load', () => {
+    mainWindow.webContents.send('ready');
+  });
 
   // Build menu from template
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
   // Insert menu
   Menu.setApplicationMenu(mainMenu);
+
 });
+
 
 // Create menu template
 const mainMenuTemplate =  [];
@@ -37,7 +46,43 @@ const mainMenuTemplate =  [];
 if(process.platform == 'darwin'){
   mainMenuTemplate.unshift({});
 }
-
+  mainMenuTemplate.push({
+    label: 'Files',
+    submenu:[
+      {
+        label: 'Graph one',
+        submenu: [{
+          label: 'Import',
+          click(item, focusedWindow){
+            showFileSelector('ONE');
+          }},{
+            label: 'Export',
+            click(item, focusedWindow){
+              showFileSaver('ONE');
+          }}],
+      },
+      {
+        label: 'Graph two',
+        submenu: [{
+          label: 'Import',
+          click(item, focusedWindow){
+            showFileSelector('TWO');
+          }},{
+            label: 'Export',
+            click(item, focusedWindow){
+              showFileSaver('TWO');
+          }}],
+      },
+      {
+        label: 'Summary graph',
+        submenu: [{
+            label: 'Export',
+            click(item, focusedWindow){
+              showFileSaver('RESULT');
+          }}],
+      }
+    ]
+  });
 // Add developer tools option if in dev
 if(process.env.NODE_ENV !== 'production'){
   mainMenuTemplate.push({
@@ -56,3 +101,43 @@ if(process.env.NODE_ENV !== 'production'){
     ]
   });
 }
+
+
+function showFileSelector(type) {
+  let options = {
+      title: "Select File",
+      properties: ['openFile'],
+  };
+  dialog.showOpenDialog(mainWindow, options, (filenames)=>{
+    if (filenames && filenames.length > 0) {
+      let options = {
+        type: type
+      };
+      fs.readFile(filenames[0], 'utf-8', (err, data) => {
+        options.data = data;
+        mainWindow.webContents.send('import-data', options);
+      });
+    }
+  });
+}
+
+function showFileSaver(type) {
+  dialog.showSaveDialog((fileName) => {
+    if (fileName === undefined) return;
+    else{
+      mainWindow.webContents.send('export-data', {
+        fileName: fileName,
+        type: type
+      });
+    }
+  });
+}
+
+ipcMain.on('save-data', (event, arg) => {
+  fs.writeFile(arg.fileName, arg.data, 'utf8', (err) => {
+    if (err) throw err;
+    console.log('The file has been saved!');
+  });
+});
+
+
