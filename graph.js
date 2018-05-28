@@ -12,19 +12,20 @@ class Graphs{
         this.graphTwo = new Graph(TWO, this, directed, document);
         this.graphResult = new Graph(RESULT, this, directed, document);
         this.directed = directed;
+        this.document = document;
     }
 
     restartSingle(name){
         if(name == ONE) {
             this.graphOne.destroy();
-            this.graphOne = new Graph(ONE, this, this.directed);
+            this.graphOne = new Graph(ONE, this, this.directed, this.document);
         }
         if(name == TWO) {
             this.graphTwo.destroy();
-            this.graphTwo = new Graph(TWO, this, this.directed);
+            this.graphTwo = new Graph(TWO, this, this.directed, this.document);
         }
         this.graphResult.destroy();
-        this.graphResult = new Graph(RESULT, this, this.directed);
+        this.graphResult = new Graph(RESULT, this, this.directed, this.document);
     }
 
     resize(){

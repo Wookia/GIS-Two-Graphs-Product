@@ -27,7 +27,7 @@ function initialize(){
     if(gr){
         gr.destroy();
     }
-    gr = new Graphs(document.getElementById("directed").checked);
+    gr = new Graphs(document.getElementById("directed").checked, document);
 }
 
 function applyLayout(type, name){
